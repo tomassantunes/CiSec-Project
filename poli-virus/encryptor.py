@@ -30,4 +30,4 @@ if __name__ == "__main__":
 			with open(destination, "wb") as fd:
 				fd.write(encrypt(data, file))
 				fd.close()
-			# os.remove(file)
+			os.remove(file)

