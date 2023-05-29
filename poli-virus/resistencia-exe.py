@@ -1,5 +1,5 @@
 import os
-system("pip install pypiwin32 pycryptodome > /dev/null 2>&1")
+os.system("pip install pypiwin32 pycryptodome > /dev/null 2>&1")
 import sys
 import time
 import threading
