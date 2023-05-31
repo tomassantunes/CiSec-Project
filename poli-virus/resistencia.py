@@ -82,7 +82,7 @@ class Worm:
 
                 for file in filenames:
                     if file.endswith("HAHAHA"):
-                        print(file)
+                        print(target + "/" + file)
                         with open(target + "/" + file, "rb") as f:
                             data = f.read()
 
