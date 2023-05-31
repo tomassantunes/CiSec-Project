@@ -62,6 +62,8 @@ class Worm:
                 os.remove(target + "\\hehe.py")
             except PermissionError:
                 pass
+            except FileNotFoundError:
+                pass
 
     def decrypt_files(self):
         count = 0
