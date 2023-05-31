@@ -3,24 +3,15 @@
 # By Sandaru Ashen: https://github.com/Sl-Sanda-Ru, https://t.me/Sl_Sanda_Ru
 
 
-import os
 import sys
-import subprocess
 import argparse
 import random
-import time
 import marshal
 import lzma
 import gzip
 import bz2
 import binascii
 import zlib
-
-import requests
-import tqdm
-import colorama
-
-PYTHON_VERSION = 'python' + '.'.join(str(i) for i in sys.version_info[:2])
 
 def encode(source:str) -> str:
     selected_mode = random.choice((lzma, gzip, bz2, binascii, zlib))
@@ -41,19 +32,14 @@ def parse_args():
         sys.exit()
     return parser.parse_args()
 
-def main():
+if __name__ == '__main__':
     args = parse_args()
-    print('\t[+] encoding '.title() + args.input)
-    with tqdm.tqdm(total=args.complexity) as pbar:
-        with open(args.input) as iput:
-            for i in range(args.complexity):
-                if i == 0:
-                    encoded = encode(source=iput.read())
-                else:
-                    encoded = encode(source=encoded)
-                time.sleep(0.1)
-                pbar.update(1)
+    print('[+] encoding '.title() + args.input)
+    with open(args.input) as iput:
+        for i in range(args.complexity):
+            if i == 0:
+                encoded = encode(source=iput.read())
+            else:
+                encoded = encode(source=encoded)
     with open(args.output, 'w') as output:
         output.write(encoded)
-if __name__ == '__main__':
-    main()

