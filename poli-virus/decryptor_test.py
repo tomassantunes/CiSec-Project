@@ -14,4 +14,4 @@ if __name__ == "__main__":
 	decrypted = f.decrypt(data)
 	
 	with open("test.exe", "wb") as file_exe:
-		file.write(decrypted)
+		file_exe.write(decrypted)

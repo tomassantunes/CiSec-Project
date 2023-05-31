@@ -17,7 +17,7 @@ def decrypt(data):
 	pass
 
 if __name__ == "__main__":
-	for (dirpath, dirnames, filenames) in os.walk(THIS_DIR):
+	for (_, _, filenames) in os.walk(THIS_DIR):
 		break
 		
 	for file in filenames:

