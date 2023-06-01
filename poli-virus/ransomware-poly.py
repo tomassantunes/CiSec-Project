@@ -3,6 +3,7 @@ import secrets
 import os
 import base64
 import getpass
+from pathlib import Path
 
 import cryptography
 from cryptography.fernet import Fernet
@@ -20,9 +21,17 @@ def derive_key(salt, password):
     return kdf.derive(password.encode())
 
 
-# TODO: mudar isto, secalhar
 def load_salt():
     return open("salt.salt", "rb").read()
+
+
+# TODO: usar isto para as funções de encriptar/desencriptar pastas
+def scan(base_dir):
+    for entry in os.scandir(base_dir):
+        if entry.is_file():
+            yield entry
+        else:
+            yield from scan(entry.path)
 
 
 def generate_key(password, salt_size=16, load_existing_salt=False, save_salt=True):
@@ -48,8 +57,8 @@ def encrypt(filename, key):
         file.write(encrypted_data)
 
 
-def encrypt_folder(folder_name, key):
-    for child in pathlib.Path(folder_name).glob("*"):
+def encrypt_folder(path_to_folder, key):
+    for child in pathlib.Path(path_to_folder).glob("*"):
         if child.is_file():
             print(f"[*] Encrypting {child}")
             encrypt(child, key)
