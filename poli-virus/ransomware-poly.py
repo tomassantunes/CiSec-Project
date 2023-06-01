@@ -86,8 +86,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="File Encryptor Script with a Password")
     parser.add_argument("path", help="Path to encrypt/decrypt, can be a file or an entire folder.")
     parser.add_argument("-s", "--salt-size", help="If this is a set, a new salt with the passed size is generated.", type=int)
-    parser.add_argument("-e", "--encrypt", action="store_true", help="Whether to encrypt the file/folder, only -e or -d.")
-    parser.add_argument("-d", "--decrypt", action="store_true", help="Whether to decrypt the file/folder, only -e or -d.")
+    parser.add_argument("-e", "--encrypt", action="store_true", help="Encrypt the file/folder, only -e or -d.")
+    parser.add_argument("-d", "--decrypt", action="store_true", help="Decrypt the file/folder, only -e or -d.")
 
     args = parser.parse_args()
     if args.encrypt:
