@@ -34,7 +34,7 @@ def generate_key(password, salt_size=16, load_existing_salt=False, save_salt=Tru
             salt_file.write(salt)
 
     derived_key = derive_key(salt, password)
-    return base64.urlsafe_b64decode(derived_key)
+    return base64.urlsafe_b64encode(derived_key)
 
 
 def encrypt(filename, key):
@@ -46,6 +46,15 @@ def encrypt(filename, key):
 
     with open(filename, "wb") as file:
         file.write(encrypted_data)
+
+
+def encrypt_folder(folder_name, key):
+    for child in pathlib.Path(folder_name).glob("*"):
+        if child.is_file():
+            print(f"[*] Encrypting {child}")
+            encrypt(child, key)
+        elif child.is_dir():
+            encrypt_folder(child, key)
 
 
 def decrypt(filename, key):
@@ -63,17 +72,8 @@ def decrypt(filename, key):
         file.write(decrypted_data)
 
 
-def encrypt_folder(foldername, key):
-    for child in pathlib.Path(foldername).glob("*"):
-        if child.is_file():
-            print(f"[*] Encrypting {child}")
-            encrypt(child, key)
-        elif child.is_dir():
-            encrypt_folder(child, key)
-
-
-def decrypt_folder(foldername, key):
-    for child in pathlib.Path(foldername).glob("*"):
+def decrypt_folder(folder_name, key):
+    for child in pathlib.Path(folder_name).glob("*"):
         if child.is_file():
             print(f"[*] Decrypting {child}")
             decrypt(child, key)
@@ -90,10 +90,8 @@ if __name__ == "__main__":
     parser.add_argument("-d", "--decrypt", action="store_true", help="Decrypt the file/folder, only -e or -d.")
 
     args = parser.parse_args()
-    if args.encrypt:
-        password = getpass.getpass("Password for encryption: ")
-    elif args.decrypt:
-        password = getpass.getpass("Password for decryption: ")
+    if args.encrypt or args.decrypt:
+        password = getpass.getpass("Password: ")
 
     if args.salt_size:
         key = generate_key(password, salt_size=args.salt_size, save_salt=True)
